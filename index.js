@@ -1,29 +1,18 @@
-const express = require("express");
+const express = require('express')
+const expressApp = express()
+const axios = require("axios");
 const path = require("path")
-
 const port = process.env.PORT || 3000;
+expressApp.use(express.static('static'))
+expressApp.use(express.json());
+require('dotenv').config();
 
-const app = express();
+const { Telegraf } = require('telegraf');
 
-app.use(express.static('static'))
-app.use(express.json());
+const bot = new Telegraf(process.env.BOT_TOKEN);
 
-app.get("/api/data", (req, res) => {
-  res.status(200).json({
-    data: [
-      { id: 1, title: "Some data" },
-      { id: 2, title: "Some other data" },
-    ],
-  });
-});
-
-app.get("/", (req, res) => {
+expressApp.get("/", (req, res) => {
   res.sendFile(path.join(__dirname + '/index.html'));
 });
 
-app.get("/index", (req, res) => {
-  res.redirect("/")
-});
-
-
-app.listen(port, () => console.log(`Listening on ${port}`));
+bot.launch()
